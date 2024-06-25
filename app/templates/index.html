@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyllabusSummarizer</title>
+</head>
+<body>
+    <h1>SyllabusSummarizer</h1>
+    <form id="summarizerform">
+        <textarea id="text" rows="10" cols="50" placeholder="Enter text to summarize"></textarea>
+        <br><br>
+        <button type="submit">Summarize</button>
+    </form>
+    <h2>Summary:</h2>
+    <p id="summary"></p>
+    <script>
+        document.getElementById('summarizerform').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const text = document.getElementById('text').value;
+            try {
+                const response = await fetch('https://api.cohere.com/v1/summarize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                document.getElementById('summary').innerHTML = data.summary || data.error || 'No summary returned';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('summary').innerHTML = 'An error occurred while summarizing';
+            }
+        });
+    </script>
+</body>
+</html>
